@@ -1,0 +1,24 @@
+services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    extends:
+      file: ../common.yml
+      service: common
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      - WATCHTOWER_HTTP_API_METRICS=true
+      - WATCHTOWER_HTTP_API_TOKEN=jNY6Ntnrxywushqrtv1ybYcK12zBdnwN
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - homepage
+      - uptime-kuma
+    restart: unless-stopped
+
+networks:
+  homepage:
+    external: true
+  uptime-kuma:
+    external: true

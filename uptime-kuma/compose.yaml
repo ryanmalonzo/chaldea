@@ -1,0 +1,29 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    ports:
+      - "3001:3001"
+    volumes:
+      - "./config:/app/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - homepage
+      - proxy
+      - uptime-kuma
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`uptime.ryanmalonzo.fr`)"
+      - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
+      - "traefik.http.routers.uptime-kuma.tls.certresolver=cloudflare"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+      - "traefik.http.routers.uptime-kuma.middlewares=robots@file,crowdsec@file,authentik@docker"
+
+networks:
+  homepage:
+    external: true
+  proxy:
+    external: true
+  uptime-kuma:
+    name: uptime-kuma

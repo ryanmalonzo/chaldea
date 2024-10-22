@@ -1,0 +1,28 @@
+services:
+  myges-ics-stream:
+    image: ryanmalonzo/myges-ics-stream:latest
+    container_name: myges
+    environment:
+      MYGES_USERNAME: ${MYGES_USERNAME}
+      MYGES_PASSWORD: ${MYGES_PASSWORD}
+      FETCH_INTERVAL_MINUTES: ${FETCH_INTERVAL_MINUTES:-60} 
+      TIMEZONE: ${TIMEZONE:-Europe/Paris}
+    expose:
+      - "8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.myges.rule=Host(`myges.ryanmalonzo.fr`)"
+      - "traefik.http.routers.myges.entrypoints=websecure"
+      - "traefik.http.routers.myges.tls.certresolver=cloudflare"
+      - "traefik.http.services.myges.loadbalancer.server.port=8080"
+      - "traefik.http.routers.myges.middlewares=robots@file,crowdsec@file"
+    networks:
+      - proxy
+      - uptime-kuma
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true
+  uptime-kuma:
+    external: true

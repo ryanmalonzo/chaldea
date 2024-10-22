@@ -1,0 +1,50 @@
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    user: 1000:1000 # should be owner of volumes
+    environment:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info  
+      ND_SESSIONTIMEOUT: 24h
+      ND_BASEURL: "https://navidrome.ryanmalonzo.fr"
+    volumes:
+      - ./data:/data
+      - ${MUSIC_DIR}:/music:ro
+    networks:
+      - homepage
+      - proxy
+      - uptime-kuma
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.navidrome.rule=Host(`navidrome.ryanmalonzo.fr`)"
+      - "traefik.http.routers.navidrome.entrypoints=websecure"
+      - "traefik.http.routers.navidrome.tls.certresolver=cloudflare"
+      - "traefik.http.services.navidrome.loadbalancer.server.port=4533"
+      - "traefik.http.routers.navidrome.middlewares=robots@file,crowdsec@file,authentik@docker"
+
+  ftp:
+    build:
+      dockerfile: Dockerfile
+    container_name: ftp
+    environment:
+      - FTP_USER=ren
+      - FTP_PASS=Unlighted1-Ducktail1-Unglazed1-Triumph1-Cough0
+      - UID=1000
+      - GID=1000
+    ports:
+      - '20-21:20-21/tcp'
+      - '40000-40009:40000-40009/tcp'
+    volumes:
+      - ${MUSIC_DIR}:/home/ren
+    profiles:
+      - manual
+
+networks:
+  homepage:
+    external: true
+  proxy:
+    external: true
+  uptime-kuma:
+    external: true

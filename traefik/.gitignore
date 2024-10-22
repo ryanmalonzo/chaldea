@@ -1,0 +1,4 @@
+config/
+crowdsec/
+letsencrypt/
+.env

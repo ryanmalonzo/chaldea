@@ -1,0 +1,29 @@
+services:
+  stirling-pdf:
+    image: frooodle/s-pdf:latest
+    container_name: stirling
+    expose:
+      - 8080
+    volumes:
+      - ./configs:/configs
+    environment:
+      - DOCKER_ENABLE_SECURITY=true
+      - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
+      - LANGS=en_US
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stirling.rule=Host(`pdf.ryanmalonzo.fr`)"
+      - "traefik.http.routers.stirling.entrypoints=websecure"
+      - "traefik.http.routers.stirling.tls.certresolver=cloudflare"
+      - "traefik.http.services.stirling.loadbalancer.server.port=8080"
+      - "traefik.http.routers.stirling.middlewares=robots@file,crowdsec@file"
+    networks:
+      - proxy
+      - uptime-kuma
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true
+  uptime-kuma:
+    external: true

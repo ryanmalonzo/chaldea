@@ -1,0 +1,31 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    extends:
+      file: ../common.yml
+      service: common
+    volumes:
+      - ./config:/app/config
+      - ./images:/app/public/images
+      - ./icons:/app/public/icons
+    networks:
+      - homepage
+      - proxy
+      - uptime-kuma
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homepage.rule=Host(`ryanmalonzo.fr`) || Host(`www.ryanmalonzo.fr`)"
+      - "traefik.http.routers.homepage.entrypoints=websecure"
+      - "traefik.http.routers.homepage.tls.certresolver=cloudflare"
+      - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+      - "traefik.http.routers.homepage.middlewares=robots@file,crowdsec@file"
+    restart: unless-stopped
+
+networks:
+  homepage:
+    name: homepage
+  proxy:
+    external: true
+  uptime-kuma:
+    external: true

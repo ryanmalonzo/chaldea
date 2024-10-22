@@ -1,0 +1,25 @@
+services:
+  memos:
+    image: neosmemo/memos:stable
+    container_name: memos
+    volumes:
+      - ./memos/:/var/opt/memos
+    expose:
+      - 5230
+    networks:
+      - proxy
+      - uptime-kuma
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.memos.rule=Host(`memos.ryanmalonzo.fr`)"
+      - "traefik.http.routers.memos.entrypoints=websecure"
+      - "traefik.http.routers.memos.tls.certresolver=cloudflare"
+      - "traefik.http.services.memos.loadbalancer.server.port=5230"
+      - "traefik.http.routers.memos.middlewares=robots@file,crowdsec@file"
+
+networks:
+  proxy:
+    external: true
+  uptime-kuma:
+    external: true

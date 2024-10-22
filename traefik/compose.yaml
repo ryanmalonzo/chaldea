@@ -1,0 +1,58 @@
+services:
+  traefik:
+    image: "traefik:v3.1"
+    container_name: "traefik"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    environment:
+      CF_API_EMAIL: ${CF_API_EMAIL}
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+    volumes:
+      - "./config/traefik.yml:/etc/traefik/traefik.yml"
+      - "./config/dynamic:/config"
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - traefik-log:/var/log/traefik
+    depends_on:
+      - crowdsec
+    networks:
+      - homepage
+      - proxy
+      - uptime-kuma
+    restart: unless-stopped
+
+  crowdsec:
+    image: docker.io/crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    environment:
+      - GID=1000
+      - COLLECTIONS=crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/whitelist-good-actors
+      - CUSTOM_HOSTNAME=crowdsec
+      - BOUNCER_KEY_TRAEFIK=ZeMmO/3cakIIOogjD6hSYI8XsjN/WFCSqeYXGcOzAjQ
+    volumes:
+      - ./crowdsec:/etc/crowdsec
+      - crowdsec-data:/var/lib/crowdsec/data
+      - traefik-log:/var/log/traefik:ro
+    security_opt:
+      - no-new-privileges=true
+    healthcheck:
+      test: ["CMD", "cscli", "version"]
+    networks:
+      - homepage
+      - proxy
+      - uptime-kuma
+    restart: unless-stopped
+
+volumes:
+  crowdsec-data:
+  traefik-log:
+
+networks:
+  homepage:
+    external: true
+  proxy:
+    name: proxy
+  uptime-kuma:
+    external: true

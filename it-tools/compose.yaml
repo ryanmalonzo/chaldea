@@ -1,0 +1,24 @@
+services:
+  it-tools:
+    image: corentinth/it-tools:latest
+    container_name: it-tools
+    expose:
+      - 80
+    labels:
+      - "traefik.enable=true"
+      # - "traefik.http.routers.it-tools.rule=Host(`it-tools.ryanmalonzo.fr`)"
+      - "traefik.http.routers.it-tools.rule=Host(`it.ryanmalonzo.fr`)"
+      - "traefik.http.routers.it-tools.entrypoints=websecure"
+      - "traefik.http.routers.it-tools.tls.certresolver=cloudflare"
+      - "traefik.http.services.it-tools.loadbalancer.server.port=80"
+      - "traefik.http.routers.it-tools.middlewares=robots@file,crowdsec@file"
+    networks:
+      - proxy
+      - uptime-kuma
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true
+  uptime-kuma:
+    external: true

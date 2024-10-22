@@ -1,0 +1,37 @@
+services:
+  tailscale-actual:
+    image: tailscale/tailscale:latest
+    container_name: tailscale-actual
+    hostname: actual
+    extends:
+      file: ../tailscale.yml
+      service: tailscale
+    environment:
+      - TS_SERVE_CONFIG=/config/actual.json
+    expose:
+      - 5006
+    volumes:
+      - ./tailscale:/config
+      - tailscale:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+      - sys_module
+    networks:
+      - uptime-kuma
+    restart: unless-stopped
+
+  actual:
+    image: docker.io/actualbudget/actual-server:latest
+    container_name: actual
+    volumes:
+      - "./data:/data"
+    restart: unless-stopped
+    network_mode: service:tailscale-actual
+
+volumes:
+  tailscale:
+
+networks:
+  uptime-kuma:
+    external: true

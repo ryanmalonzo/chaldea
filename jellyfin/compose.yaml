@@ -1,0 +1,173 @@
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    extends:
+      file: ../common.yml
+      service: common
+    ports:
+      - "9696:9696"
+    volumes:
+      - ./prowlarr:/config
+    restart: unless-stopped
+    networks:
+      - homepage
+      - jellyfin
+      - uptime-kuma
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    extends:
+      file: ../common.yml
+      service: common
+    ports:
+      - "7878:7878"
+    volumes:
+      - ./radarr:/config
+      - ${MOVIES_DIR}:/movies
+      - ${DOWNLOADS_DIR}:/downloads
+    restart: unless-stopped
+    networks:
+      - homepage
+      - jellyfin
+      - uptime-kuma
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    extends:
+      file: ../common.yml
+      service: common
+    ports:
+      - "8989:8989"
+    volumes:
+      - ./sonarr:/config
+      - ${TV_SHOWS_DIR}:/tv
+      - ${DOWNLOADS_DIR}:/downloads
+    restart: unless-stopped
+    networks:
+      - homepage
+      - jellyfin
+      - uptime-kuma
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    extends:
+      file: ../common.yml
+      service: common
+    environment:
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./qbittorrent:/config
+      - ${DOWNLOADS_DIR}:/downloads
+    restart: unless-stopped
+    networks:
+      - homepage
+      - jellyfin
+      - uptime-kuma
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    extends:
+      file: ../common.yml
+      service: common
+    environment:
+      - LOG_LEVEL=debug
+    ports:
+      - "5055:5055" 
+    volumes:
+      - ./jellyseerr:/app/config
+    restart: unless-stopped
+    depends_on:
+      - jellyfin
+    networks:
+      - homepage
+      - jellyfin
+      - proxy
+      - uptime-kuma
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.ryanmalonzo.fr`)"
+      - "traefik.http.routers.jellyseerr.entrypoints=websecure"
+      - "traefik.http.routers.jellyseerr.tls.certresolver=cloudflare"
+      - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
+      - "traefik.http.routers.jellyseerr.middlewares=robots@file,crowdsec@file,authentik@docker"
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    extends:
+      file: ../common.yml
+      service: common
+    environment:
+      - TZ=Europe/Paris
+      - JELLYFIN_PublishedServerUrl=https://jellyfin.ryanmalonzo.fr
+      - DOCKER_MODS=ghcr.io/jumoog/intro-skipper
+    ports:
+      - "8096:8096"
+    volumes:
+      - ./jellyfin:/config
+      - ${TV_SHOWS_DIR}:/data/tvshows
+      - ${MOVIES_DIR}:/data/movies
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
+    networks:
+      - homepage
+      - jellyfin
+      - proxy
+      - uptime-kuma
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.ryanmalonzo.fr`)"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.tls.certresolver=cloudflare"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+      - "traefik.http.routers.jellyfin.middlewares=robots@file,crowdsec@file"
+
+  tdarr:
+    container_name: tdarr
+    image: 'ghcr.io/haveagitgat/tdarr:latest'
+    restart: unless-stopped
+    extends:
+      file: ../common.yml
+      service: common
+    environment:
+      - UMASK_SET=007
+      - serverIP=0.0.0.0
+      - serverPort=8266
+      - webUIPort=8265
+      - internalNode=true
+      - inContainer=true
+      - ffmpegVersion=6
+      - nodeName=chaldea
+    ports:
+      - "8265:8265"
+    volumes:
+      - './tdarr/server:/app/server'
+      - './tdarr/configs:/app/configs'
+      - './tdarr/logs:/app/logs'
+      - '/mnt/hdd/transcode_cache:/temp'
+      - '/mnt/hdd:/media'
+    devices:
+      - '/dev/dri:/dev/dri'
+    networks:
+      - homepage
+      - jellyfin
+      - uptime-kuma
+
+networks:
+  homepage:
+    external: true
+  jellyfin:
+    name: jellyfin
+  proxy:
+    external: true
+  uptime-kuma:
+    external: true
