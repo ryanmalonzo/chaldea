@@ -1,0 +1,25 @@
+services:
+  gotify:
+    image: gotify/server:latest
+    container_name: gotify
+    volumes:
+      - "./data:/app/data"
+    expose:
+      - 80
+    networks:
+      - proxy
+      - uptime-kuma
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gotify.rule=Host(`push.ryanmalonzo.fr`)"
+      - "traefik.http.routers.gotify.entrypoints=websecure"
+      - "traefik.http.routers.gotify.tls.certresolver=cloudflare"
+      - "traefik.http.services.gotify.loadbalancer.server.port=80"
+      - "traefik.http.routers.gotify.middlewares=robots@file,crowdsec@file"
+
+networks:
+  proxy:
+    external: true
+  uptime-kuma:
+    external: true
