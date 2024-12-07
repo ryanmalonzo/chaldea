@@ -1,12 +1,11 @@
 services:
   it-tools:
-    image: corentinth/it-tools:latest
+    image: corentinth/it-tools
     container_name: it-tools
     expose:
       - 80
     labels:
       - "traefik.enable=true"
-      # - "traefik.http.routers.it-tools.rule=Host(`it-tools.ryanmalonzo.fr`)"
       - "traefik.http.routers.it-tools.rule=Host(`it.ryanmalonzo.fr`)"
       - "traefik.http.routers.it-tools.entrypoints=websecure"
       - "traefik.http.routers.it-tools.tls.certresolver=cloudflare"

@@ -45,14 +45,13 @@ services:
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+    expose:
+      - 9000
     volumes:
       - ./media:/media
       - ./custom-templates:/templates
     env_file:
       - .env
-    # ports:
-      # - "${COMPOSE_PORT_HTTP:-9000}:9000"
-      # - "${COMPOSE_PORT_HTTPS:-9443}:9443"
     depends_on:
       - postgresql
       - redis

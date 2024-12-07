@@ -1,6 +1,6 @@
 services:
   myges-ics-stream:
-    image: ryanmalonzo/myges-ics-stream:latest
+    image: ryanmalonzo/myges-ics-stream
     container_name: myges
     environment:
       MYGES_USERNAME: ${MYGES_USERNAME}

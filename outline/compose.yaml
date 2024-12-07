@@ -1,6 +1,6 @@
 services:
   outline:
-    image: docker.getoutline.com/outlinewiki/outline:latest
+    image: docker.getoutline.com/outlinewiki/outline
     container_name: outline
     env_file: ./docker.env
     expose:

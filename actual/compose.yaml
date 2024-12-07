@@ -1,6 +1,6 @@
 services:
   tailscale-actual:
-    image: tailscale/tailscale:latest
+    image: tailscale/tailscale
     container_name: tailscale-actual
     hostname: actual
     extends:

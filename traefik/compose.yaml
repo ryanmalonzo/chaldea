@@ -3,7 +3,6 @@ services:
     image: "traefik:v3.1"
     container_name: "traefik"
     ports:
-      - "80:80"
       - "443:443"
       - "8080:8080"
     environment:
@@ -24,7 +23,7 @@ services:
     restart: unless-stopped
 
   crowdsec:
-    image: docker.io/crowdsecurity/crowdsec:latest
+    image: docker.io/crowdsecurity/crowdsec
     container_name: crowdsec
     environment:
       - GID=1000

@@ -1,6 +1,6 @@
 services:
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr:latest
+    image: lscr.io/linuxserver/prowlarr
     container_name: prowlarr
     extends:
       file: ../common.yml
@@ -16,7 +16,7 @@ services:
       - uptime-kuma
 
   radarr:
-    image: lscr.io/linuxserver/radarr:latest
+    image: lscr.io/linuxserver/radarr
     container_name: radarr
     extends:
       file: ../common.yml
@@ -34,7 +34,7 @@ services:
       - uptime-kuma
 
   sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
+    image: lscr.io/linuxserver/sonarr
     container_name: sonarr
     extends:
       file: ../common.yml
@@ -52,7 +52,7 @@ services:
       - uptime-kuma
 
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
+    image: lscr.io/linuxserver/qbittorrent
     container_name: qbittorrent
     extends:
       file: ../common.yml
@@ -72,7 +72,7 @@ services:
       - uptime-kuma
 
   jellyseerr:
-    image: fallenbagel/jellyseerr:latest
+    image: fallenbagel/jellyseerr
     container_name: jellyseerr
     extends:
       file: ../common.yml
@@ -100,7 +100,7 @@ services:
       - "traefik.http.routers.jellyseerr.middlewares=robots@file,crowdsec@file,authentik@docker"
 
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
+    image: lscr.io/linuxserver/jellyfin
     container_name: jellyfin
     extends:
       file: ../common.yml

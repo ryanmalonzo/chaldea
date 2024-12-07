@@ -1,8 +1,8 @@
 services:
   navidrome:
-    image: deluan/navidrome:latest
+    image: deluan/navidrome
     container_name: navidrome
-    user: 1000:1000 # should be owner of volumes
+    user: 1000:1000
     environment:
       ND_SCANSCHEDULE: 1h
       ND_LOGLEVEL: info  

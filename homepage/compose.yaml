@@ -1,10 +1,12 @@
 services:
   homepage:
-    image: ghcr.io/gethomepage/homepage:latest
+    image: ghcr.io/gethomepage/homepage
     container_name: homepage
     extends:
       file: ../common.yml
       service: common
+    expose:
+      - 3000
     volumes:
       - ./config:/app/config
       - ./images:/app/public/images
