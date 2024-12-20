@@ -13,6 +13,7 @@ services:
     volumes:
       - ./tailscale:/config
       - tailscale:/var/lib/tailscale
+    devices:
       - /dev/net/tun:/dev/net/tun
     cap_add:
       - net_admin
