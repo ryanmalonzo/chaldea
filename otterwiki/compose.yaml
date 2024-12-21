@@ -1,0 +1,33 @@
+services:
+  otterwiki:
+    image: redimp/otterwiki:2
+    container_name: otterwiki
+    expose:
+      - 80
+    volumes:
+      - ./app-data:/app-data
+    environment:
+      AUTO_APPROVAL: true
+      EMAIL_NEEDS_CONFIRMATION: false
+      NOTIFY_ADMINS_ON_REGISTER: false
+      COMMIT_MESSAGE: 'OPTIONAL'
+      AUTH_METHOD: 'PROXY_HEADER'
+      READ_ACCESS: 'APPROVED'
+      WRITE_ACCESS: 'APPROVED'
+    networks:
+      - proxy
+      - uptime-kuma
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.otterwiki.rule=Host(`otterwiki.ryanmalonzo.fr`)"
+      - "traefik.http.routers.otterwiki.entrypoints=websecure"
+      - "traefik.http.routers.otterwiki.tls.certresolver=cloudflare"
+      - "traefik.http.services.otterwiki.loadbalancer.server.port=80"
+      - "traefik.http.routers.otterwiki.middlewares=robots@file,crowdsec@file,authentik@docker"
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true
+  uptime-kuma:
+    external: true
