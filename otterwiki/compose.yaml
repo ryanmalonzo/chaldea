@@ -14,6 +14,8 @@ services:
       AUTH_METHOD: 'PROXY_HEADER'
       READ_ACCESS: 'APPROVED'
       WRITE_ACCESS: 'APPROVED'
+      ATTACHMENT_ACCESS: 'APPROVED'
+      MAIL_DEFAULT_SENDER: 'otterwiki@ryanmalonzo.fr'
     networks:
       - proxy
       - uptime-kuma
