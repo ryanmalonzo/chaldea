@@ -8,6 +8,9 @@ services:
       ND_LOGLEVEL: info  
       ND_SESSIONTIMEOUT: 24h
       ND_BASEURL: "https://navidrome.ryanmalonzo.fr"
+      ND_ENABLEINSIGHTSCOLLECTOR: false
+      ND_REVERSEPROXYUSERHEADER: "X-authentik-username"
+      ND_REVERSEPROXYWHITELIST: "0.0.0.0/0"
     volumes:
       - ./data:/data
       - ${MUSIC_DIR}:/music:ro
