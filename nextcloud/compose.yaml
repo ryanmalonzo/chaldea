@@ -1,0 +1,62 @@
+services:
+  nextcloud:
+    image: lscr.io/linuxserver/nextcloud:latest
+    container_name: nextcloud
+    extends:
+      file: ../common.yml
+      service: common
+    volumes:
+        - "./config:/config"
+        - "./data:/data"
+    expose:
+      - 443
+    depends_on:
+      - mariadb
+      - redis
+    restart: unless-stopped
+    networks:
+      - nextcloud
+      - proxy
+      - uptime-kuma
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.ryanmalonzo.fr`)"
+      - "traefik.http.services.nextcloud.loadbalancer.serverstransport=ignorecert@file"
+      - "traefik.http.services.nextcloud.loadbalancer.server.scheme=https"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls.certresolver=cloudflare"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=443"
+      - "traefik.http.routers.nextcloud.middlewares=nextcloud@file,robots@file"
+
+  mariadb:
+    image: lscr.io/linuxserver/mariadb:10.11.10
+    extends:
+      file: ../common.yml
+      service: common
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - "./mariadb:/config"
+    restart: unless-stopped
+    networks:
+      - nextcloud
+
+  redis:
+    image: docker.io/library/redis:alpine
+    volumes:
+      - "redis:/data"
+    networks:
+      - nextcloud
+
+volumes:
+  redis:
+
+networks:
+  nextcloud:
+  proxy:
+    external: true
+  uptime-kuma:
+    external: true
