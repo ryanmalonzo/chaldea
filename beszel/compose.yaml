@@ -1,0 +1,39 @@
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    expose:
+      - 8090
+    volumes:
+      - ./beszel_data:/beszel_data
+      - /mnt/hdd/.beszel:/extra-filesystems/sda1:ro
+    environment:
+      DISABLE_PASSWORD_AUTH: true
+      USER_CREATION: true
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.beszel.rule=Host(`beszel.ryanmalonzo.fr`)"
+      - "traefik.http.routers.beszel.entrypoints=websecure"
+      - "traefik.http.routers.beszel.tls.certresolver=cloudflare"
+      - "traefik.http.services.beszel.loadbalancer.server.port=8090"
+      - "traefik.http.routers.beszel.middlewares=robots@file,crowdsec@file"
+
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      PORT: 45876
+      KEY: ${KEY}
+
+networks:
+  proxy:
+    external: true
