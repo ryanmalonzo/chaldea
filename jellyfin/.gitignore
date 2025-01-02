@@ -3,6 +3,7 @@ jellyseerr/
 prowlarr/
 qbittorrent/
 radarr/
+recyclarr/
 sonarr/
 tdarr/
 .env

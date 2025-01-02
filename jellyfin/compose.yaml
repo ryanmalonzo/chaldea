@@ -162,6 +162,17 @@ services:
       - jellyfin
       - uptime-kuma
 
+  recyclarr:
+    image: recyclarr/recyclarr
+    container_name: recyclarr
+    user: 1000:1000
+    volumes:
+      - "./recyclarr/config:/config"
+    environment:
+      TZ: Europe/Paris
+    networks:
+      - jellyfin
+
 networks:
   homepage:
     external: true
