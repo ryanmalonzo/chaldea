@@ -14,6 +14,7 @@ services:
       DISABLE_PASSWORD_AUTH: true
       USER_CREATION: true
     networks:
+      - homepage
       - proxy
     labels:
       - "traefik.enable=true"
@@ -35,5 +36,7 @@ services:
       KEY: ${KEY}
 
 networks:
+  homepage:
+    external: true
   proxy:
     external: true
