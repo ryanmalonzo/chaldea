@@ -172,6 +172,8 @@ services:
       TZ: Europe/Paris
     networks:
       - jellyfin
+      - uptime-kuma
+    restart: unless-stopped
 
 networks:
   homepage:
