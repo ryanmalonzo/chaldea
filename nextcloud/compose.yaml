@@ -40,9 +40,9 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - "./mariadb:/config"
-    restart: unless-stopped
     networks:
       - nextcloud
+    restart: unless-stopped
 
   redis:
     image: docker.io/library/redis:alpine
@@ -50,6 +50,7 @@ services:
       - "redis:/data"
     networks:
       - nextcloud
+    restart: unless-stopped
 
 volumes:
   redis:
