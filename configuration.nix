@@ -38,6 +38,8 @@
     wget
     git
     curl
+    terraform
+    gh
   ];
 
   services.openssh.enable = true;
@@ -45,6 +47,10 @@
   security.sudo.wheelNeedsPassword = false;
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "terraform"
+  ];
 
   system.activationScripts.hushlogin = ''
     touch /home/ren/.hushlogin
