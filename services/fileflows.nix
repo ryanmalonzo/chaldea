@@ -10,7 +10,7 @@
   ];
 
   virtualisation.oci-containers.containers.fileflows = {
-    image = "revenz/fileflows:26.06";
+    image = "revenz/fileflows:26.07";
     networks = [ "fileflows" ];
     ports = [ "127.0.0.1:5000:5000" ];
     volumes = [
